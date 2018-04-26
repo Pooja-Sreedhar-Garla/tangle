@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Tangle Simulator</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome-all.min.css') }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}" />
+        <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+        <nav class="navbar navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">Tangle Simulator</a>
+        </nav>
+    </head>
+
+    <body>
+        <div class="row"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-2">
+                    <button class="btn btn-primary" id="pause"> <i class="fas fa-play"></i> </button>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-danger" id="reset"> Reset </button>
+                </div>
+            </div>
+
+        </div>
+        <script src="{{ url_for('static', filename='js/d3.v3.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+    </body>
+</html>

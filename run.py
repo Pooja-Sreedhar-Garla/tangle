@@ -18,4 +18,4 @@ if __name__ == '__main__':
         p2 = Process(target=services.update_graph)
         p1.start()
         p2.start()
-        app.run()
+        app.run(debug=True)

@@ -1,7 +1,11 @@
-from flask import render_template, request, jsonify
+import json
+
+from collections import Counter
+from flask import render_template, request, jsonify, session
 
 from . import app, db, node_queue, paused, lambd, alpha, lock
 from .models import Node, Edge
+from .services import serialize
 
 
 @app.route('/')
@@ -11,9 +15,16 @@ def index():
 
 @app.route('/get_graph')
 def get_graph():
-    nodes = [node.id for node in Node.query.all()]
-    edges = [[edge.start_id, edge.end_id] for edge in Edge.query.all()]
-    return jsonify({'nodes': nodes, 'edges': edges})
+    if 'timestamp' not in session:
+        session['depth_counts'] = '{}'
+
+    depth_counts = json.loads(session['depth_counts'], object_hook=Counter)
+    nodes = Node.query.filter(Node.timestamp > request.args.get('timestamp', 0))
+    edges = Edge.query.filter(Node.timestamp > request.args.get('timestamp', 0))
+
+    serialized = jsonify(serialize(nodes, edges, depth_counts))
+    session['depth_counts'] = json.dumps(depth_counts)
+    return serialized
 
 
 @app.route('/add', methods=['POST'])
@@ -55,4 +66,7 @@ def reset():
     node = Node(weight=1)
     db.session.add(node)
     db.session.commit()
+    while node_queue:
+        node_queue.get()
+
     lock.release()
