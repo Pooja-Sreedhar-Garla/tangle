@@ -33,10 +33,15 @@ def add():
     lock.acquire()
     db.session.add(n)
     db.session.commit()
-    node_queue.put(n)
+    node_queue.put(n.id)
     lock.release()
 
     return ''
+
+
+@app.route('/get-alpha-lambda')
+def get_alpha_lambda():
+    return jsonify({'alpha': alpha.value, 'lambd': lambd.value})
 
 
 @app.route('/update-alpha', methods=['POST'])
@@ -66,7 +71,8 @@ def reset():
     node = Node(weight=1)
     db.session.add(node)
     db.session.commit()
-    while node_queue:
+    while not node_queue.empty():
         node_queue.get()
 
     lock.release()
+    return ''

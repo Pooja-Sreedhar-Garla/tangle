@@ -1,7 +1,32 @@
-$(document).ready(function(){
+$(document).ready(function() {
+    $.getJSON('/get-alpha-lambda', function(data){
+        $('#alpha').val(data.alpha).next().html(data.alpha);
+        $('#lambda').val(data.lambd).next().html(data.lambd);
+    });
+
+    var rangeSlider = function(){
+        var slider = $('.range-slider'),
+            range = $('.range-slider__range'),
+            value = $('.range-slider__value');
+
+        slider.each(function(){
+
+            value.each(function(){
+                var value = $(this).prev().attr('value');
+                $(this).html(value);
+            });
+
+            range.on('input', function(){
+                $(this).next(value).html(this.value);
+            });
+        });
+    };
+
+    rangeSlider();
+
     var nodes, links, nodes_dict, restart, timestamp, path, circle, svg, t;
-    var width  = 1800,
-        height = 500,
+    var width  = 5000,
+        height = 800,
         colors = d3.scale.category10();
     var paused = true;
     var init = function(data) {
@@ -18,7 +43,7 @@ $(document).ready(function(){
             link.target = nodes_dict[link.target];
         });
 
-        svg = d3.select('body')
+        svg = d3.select('#d3')
           .append('svg')
           .attr('oncontextmenu', 'return false;')
           .attr('width', width)
@@ -55,7 +80,6 @@ $(document).ready(function(){
           .append('svg:path')
             .attr('d', 'M10,-5L0,0L10,5')
             .attr('fill', '#000');
-
 
         path = svg.append('svg:g').selectAll('path');
         circle = svg.append('svg:g').selectAll('g');
@@ -102,7 +126,7 @@ $(document).ready(function(){
 
 
           circle.selectAll('circle')
-            .style('fill',  colors(1))
+            .style('fill',  function(d) { return (d.user_created) ? d3.rgb("#d62728"): d3.rgb("#1f77b4"); })
             .classed('reflexive', function(d) { return d.reflexive; });
 
           // add new nodes
@@ -111,8 +135,8 @@ $(document).ready(function(){
           g.append('svg:circle')
             .attr('class', 'node')
             .attr('r', 12)
-            .style('fill', colors(1))
-            .style('stroke', function(d) { return d3.rgb(colors(1)).darker().toString(); })
+            .style('fill', function(d) { return (d.user_created) ? d3.rgb("#d62728"): d3.rgb("#1f77b4"); })
+            .style('stroke', function(d) { return (d.user_created) ?  d3.rgb("#d62728").darker().toString(): d3.rgb("#1f77b4").darker().toString(); })
             .classed('reflexive', function(d) { return d.reflexive; })
 
           g.append('svg:text')
@@ -157,6 +181,7 @@ $(document).ready(function(){
         $.post('/pause');
     }
 
+
     $('#pause').click(pause);
     $('#reset').click(function(){
         clearTimeout(t);
@@ -164,8 +189,23 @@ $(document).ready(function(){
             pause();
         }
         $.post('/reset', function() {
+            $('#d3').html("");
+
             $.getJSON('/get_graph', init);
         });
     });
+
+    $('#alpha').change(function() {
+        $.post('/update-alpha', {'alpha': $('#alpha').val()});
+    });
+
+    $('#lambda').change(function() {
+        $.post('/update-lambda', {'lambd': $('#lambda').val()});
+    });
+
+    $('#add').click(function() {
+        $.post('/add');
+    });
+
     $.getJSON('/get_graph', init);
 });

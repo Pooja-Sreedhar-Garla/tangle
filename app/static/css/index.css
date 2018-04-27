@@ -54,3 +54,13 @@ text.id {
   text-anchor: middle;
   font-weight: bold;
 }
+
+nav {
+    margin-bottom: 20px;
+}
+
+.jumbotron {
+    padding-top: 10px;
+    padding-bottom: 16px;
+}
+
