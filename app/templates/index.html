@@ -54,10 +54,28 @@
                         </div>
                     </div>
                 </div>
+                <div id="d3" style="height: 400px;overflow: auto;">
+                </div>
+                </div>
+            <div align="justify">
+            <p>Tangle uses tip selection algorithm. Let us talk about two tip selection algorithms: The Weighted Random Walk and Unweighted Random Walk algorithm.</p>
+
+<p>In Unweighted Random Walk, we put a walker on the genesis transaction, and have it start “walking” towards the tips. On each step it jumps to one of the transactions which directly approves the one we are currently on. We choose which transaction to jump to with equal probability, which is where the term unweighted comes from. When α = 0, the tip selection uses Unweighted Random Walk.</p>
+
+<p>One of the things we want our tip selection algorithm to do is avoid lazy tips. A lazy tip is one that approves old transactions rather than recent ones. It is lazy because it does not bother keeping up to date with the newest state of the tangle, and only broadcasts its own transactions based on old data. This does not help the network since no new transactions are confirmed.</p>
+
+<p>The solution to this problem is to force participants to only approve recent transactions. This would clash with the idea of decentralization. Thus, transactions can approve whomever they please. We also don’t have a reliable way of telling exactly when each transaction came in, so we cannot enforce such a rule. A solution is to construct a system with built-in incentives against such behavior, so that lazy tips will be unlikely to get approved by anyone.</p>
+
+<p>The strategy will be to bias our random walk, so we are less likely to choose lazy tips. We will use the term cumulative weight to denote how important a transaction is. We are more likely to walk towards a heavy transaction than a light one. The definition of cumulative weight is very simple: we count how many approvers a transaction has and add one. We count both direct and indirect approvers. When α = 1, the tip selection uses super-weighted Walk. The parameter α sets how important a transaction’s cumulative weight is.</p>
+
+<p>If we set α to be very high, we get the super-weighted walk. In between, we can find a good balance between punishing lazy behavior and not leaving too many tips behind. Determining an ideal value for α is an important research topic in IOTA. This method of setting a rule for deciding the probability of each step in a random walk is called a Markov Chain Monte Carlo technique(used by Tangle) , or MCMC. In a Markov chain each step does not depend on the previous one but follows from a rule that is decided in advance.</p>
+
+<p>λ is the arrival rate of the transaction, a Poisson distribution. The genesis transaction is the first transaction that is created with all available IOTAs which is then traded to others.</p>
+
+Our Tangle Simulator allows the user to see the tangle grow from the genesis transaction. The user can play to see the simulation of the growing tangle according to the incoming arrival rate he sets. He can also update the alpha value to see the variation in the tip selection. He could add his own transaction and see where it gets placed in the tangle using the ‘plus’ button. The Reset button allows him to start from the Genesis again as in figure below. The nodes here represent a transaction. The blue nodes are the ones that simulate a growing tangle due to various transactions from others. The red node represents the node created by the user.<br>
+
+            </p>
             </div>
-            <div id="d3" style="height: 400px;overflow: auto;">
-            </div>
-        </div>
         <script src="{{ url_for('static', filename='js/d3.v3.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/index.js') }}"></script>
     </body>
